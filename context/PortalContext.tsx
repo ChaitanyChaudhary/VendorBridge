@@ -9,6 +9,7 @@ export type ViewType =
   | "vendors"
   | "rfqs"
   | "quotations"
+  | "allQuotations"
   | "comparison"
   | "approvals"
   | "pos"

@@ -1,12 +1,14 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { usePortal, ViewType } from "@/context/PortalContext";
 import {
   LayoutDashboard,
   Users,
   FileText,
   FileSignature,
+  FileSpreadsheet,
   CheckSquare,
   Receipt,
   BarChart3,
@@ -14,12 +16,13 @@ import {
   LogOut,
   Building2,
   Settings,
+  type LucideIcon,
 } from "lucide-react";
 
 interface SidebarItem {
   id: ViewType;
   label: string;
-  icon: React.ComponentType<any>;
+  icon: LucideIcon;
 }
 
 export default function Sidebar() {
@@ -30,6 +33,7 @@ export default function Sidebar() {
     { id: "vendors", label: "Vendors", icon: Users },
     { id: "rfqs", label: "RFQs", icon: FileText },
     { id: "quotations", label: "Quotations", icon: FileSignature },
+    { id: "allQuotations", label: "All Quotations", icon: FileSpreadsheet },
     { id: "approvals", label: "Approvals", icon: CheckSquare },
     { id: "pos", label: "Purchase Orders", icon: Receipt },
     { id: "reports", label: "Reports", icon: BarChart3 },
@@ -41,7 +45,7 @@ export default function Sidebar() {
   const isActive = (viewId: ViewType) => currentView === viewId;
 
   return (
-    <aside className="w-64 bg-white border border-slate-200/80 rounded-3xl p-6 flex flex-col shadow-sm h-[calc(100vh-2rem)] sticky top-4 select-none">
+    <aside className="w-64 bg-white border border-slate-200/80 rounded-3xl p-6 flex flex-col shadow-sm h-[calc(100vh-2rem)] sticky top-4 select-none overflow-y-auto">
       {/* Brand Logo */}
       <div className="flex items-center gap-3 px-2 mb-8">
         <div className="w-10 h-10 rounded-2xl bg-emerald-500 flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
@@ -58,7 +62,7 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-1 space-y-1">
+      <nav className="flex-1 min-h-0 space-y-1">
         {menuItems.map((item) => {
           const IconComponent = item.icon;
           const active = isActive(item.id);
@@ -85,13 +89,15 @@ export default function Sidebar() {
 
       {/* User Session Profile Card */}
       {user && (
-        <div className="mt-auto pt-6 border-t border-slate-100">
+        <div className="mt-auto pt-6 border-t border-slate-100 pb-2">
           <div className="flex items-center gap-3 px-2 mb-4">
             <div className="w-10 h-10 rounded-full border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center shadow-inner shrink-0">
               {userProfile.avatarUrl ? (
-                <img
+                <Image
                   src={userProfile.avatarUrl}
                   alt={userProfile.name || user.name}
+                  width={40}
+                  height={40}
                   className={`w-full h-full object-cover transition-all duration-300 ${
                     userProfile.avatarGrayscale ? "avatar-bw" : ""
                   }`}

@@ -9,6 +9,7 @@ import DashboardScreen from "@/components/DashboardScreen";
 import VendorsScreen from "@/components/VendorsScreen";
 import CreateRFQScreen from "@/components/CreateRFQScreen";
 import SubmitQuotationScreen from "@/components/SubmitQuotationScreen";
+import AllQuotationsScreen from "@/components/AllQuotationsScreen";
 import CompareQuotationsScreen from "@/components/CompareQuotationsScreen";
 import ApprovalWorkflowScreen from "@/components/ApprovalWorkflowScreen";
 import PurchaseOrderScreen from "@/components/PurchaseOrderScreen";
@@ -38,6 +39,8 @@ export default function Home() {
         return <CreateRFQScreen />;
       case "quotations":
         return <SubmitQuotationScreen />;
+      case "allQuotations":
+        return <AllQuotationsScreen />;
       case "comparison":
         return <CompareQuotationsScreen />;
       case "approvals":

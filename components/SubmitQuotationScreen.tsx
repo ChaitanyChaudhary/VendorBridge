@@ -1,88 +1,63 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { usePortal, QuoteItem } from "@/context/PortalContext";
-import { ChevronRight, FileEdit, Award } from "lucide-react";
+import React, { useState } from "react";
+import { usePortal, QuoteItem, RFQ, Vendor } from "@/context/PortalContext";
+import { ChevronRight } from "lucide-react";
+import { formatINR } from "@/lib/currency";
 
-export default function SubmitQuotationScreen() {
-  const { rfqs, vendors, submitQuotation, selectedRfqForQuote, setView } = usePortal();
-
-  // Find the selected RFQ
-  const rfq = rfqs.find((r) => r.id === selectedRfqForQuote) || rfqs[1] || rfqs[0];
-
-  const [selectedVendorId, setSelectedVendorId] = useState("");
-  const [items, setItems] = useState<QuoteItem[]>([]);
+function QuotationForm({
+  rfq,
+  vendors,
+  submitQuotation,
+  setView,
+}: {
+  rfq: RFQ;
+  vendors: Vendor[];
+  submitQuotation: ReturnType<typeof usePortal>["submitQuotation"];
+  setView: ReturnType<typeof usePortal>["setView"];
+}) {
+  const [selectedVendorId, setSelectedVendorId] = useState(
+    rfq.selectedSuppliers[0] || vendors[0]?.id || ""
+  );
+  const [items, setItems] = useState<QuoteItem[]>(
+    rfq.items.map((item) => ({
+      description: item.description,
+      qty: item.qty,
+      unit: item.unit,
+      unitPrice: 0,
+      totalPrice: 0,
+    }))
+  );
   const [deliveryTime, setDeliveryTime] = useState("10 Days");
   const [paymentTerms, setPaymentTerms] = useState("Net 30");
   const [remarks, setRemarks] = useState("");
 
-  // Seed item list based on chosen RFQ
-  useEffect(() => {
-    if (rfq) {
-      const initialQuoteItems = rfq.items.map((item) => ({
-        description: item.description,
-        qty: item.qty,
-        unit: item.unit,
-        unitPrice: 0,
-        totalPrice: 0,
-      }));
-      setItems(initialQuoteItems);
-
-      // Pre-select first vendor in the target list of the RFQ
-      if (rfq.selectedSuppliers.length > 0) {
-        setSelectedVendorId(rfq.selectedSuppliers[0]);
-      } else if (vendors.length > 0) {
-        setSelectedVendorId(vendors[0].id);
-      }
-    }
-  }, [rfq, vendors]);
-
   const handlePriceChange = (index: number, price: number) => {
     setItems((prev) =>
-      prev.map((item, i) => {
-        if (i === index) {
-          const qty = item.qty;
-          return {
-            ...item,
-            unitPrice: price,
-            totalPrice: qty * price,
-          };
-        }
-        return item;
+      prev.map((item, itemIndex) => {
+        if (itemIndex !== index) return item;
+
+        return {
+          ...item,
+          unitPrice: price,
+          totalPrice: item.qty * price,
+        };
       })
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!rfq || !selectedVendorId || items.some((item) => item.unitPrice <= 0)) return;
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!selectedVendorId || items.some((item) => item.unitPrice <= 0)) return;
 
     submitQuotation(rfq.id, selectedVendorId, items, deliveryTime, paymentTerms, remarks);
-
-    // Redirect to Comparison
-    setView("comparison");
+    setView("allQuotations");
   };
 
-  if (!rfq) {
-    return (
-      <div className="p-8 text-center text-slate-400">
-        <p className="font-semibold">No active open RFQ found for quotation submissions.</p>
-        <button
-          onClick={() => setView("rfqs")}
-          className="mt-4 text-emerald-600 font-bold hover:underline"
-        >
-          Create one now
-        </button>
-      </div>
-    );
-  }
-
-  // Calculate total price
   const quoteTotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-800 leading-tight">
           Submit Quotation
@@ -92,10 +67,8 @@ export default function SubmitQuotationScreen() {
         </p>
       </div>
 
-      {/* Main Form Bento Card */}
       <div className="bento-card p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* RFQ Meta Info bar */}
           <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -119,19 +92,18 @@ export default function SubmitQuotationScreen() {
               </span>
               <select
                 value={selectedVendorId}
-                onChange={(e) => setSelectedVendorId(e.target.value)}
+                onChange={(event) => setSelectedVendorId(event.target.value)}
                 className="mt-0.5 block w-full px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
               >
-                {vendors.map((v) => (
-                  <option key={v.id} value={v.id}>
-                    {v.name} ({v.id})
+                {vendors.map((vendor) => (
+                  <option key={vendor.id} value={vendor.id}>
+                    {vendor.name} ({vendor.id})
                   </option>
                 ))}
               </select>
             </div>
           </div>
 
-          {/* Items Table */}
           <div className="border border-slate-100 rounded-xl overflow-hidden">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -139,22 +111,16 @@ export default function SubmitQuotationScreen() {
                   <th className="py-3 px-4">Item Description</th>
                   <th className="py-3 px-4 w-24">Qty</th>
                   <th className="py-3 px-4 w-24">Unit</th>
-                  <th className="py-3 px-4 w-36">Unit Price ($)</th>
-                  <th className="py-3 px-4 w-32 text-right">Total Price ($)</th>
+                  <th className="py-3 px-4 w-36">Unit Price (INR)</th>
+                  <th className="py-3 px-4 w-32 text-right">Total Price (INR)</th>
                 </tr>
               </thead>
               <tbody className="text-xs font-medium text-slate-650 divide-y divide-slate-50">
-                {items.map((item, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/10">
-                    <td className="py-4 px-4 font-bold text-slate-700">
-                      {item.description}
-                    </td>
-                    <td className="py-4 px-4 text-slate-500">
-                      {item.qty}
-                    </td>
-                    <td className="py-4 px-4 text-slate-400">
-                      {item.unit}
-                    </td>
+                {items.map((item, index) => (
+                  <tr key={index} className="hover:bg-slate-50/10">
+                    <td className="py-4 px-4 font-bold text-slate-700">{item.description}</td>
+                    <td className="py-4 px-4 text-slate-500">{item.qty}</td>
+                    <td className="py-4 px-4 text-slate-400">{item.unit}</td>
                     <td className="py-2.5 px-2">
                       <input
                         type="number"
@@ -162,13 +128,15 @@ export default function SubmitQuotationScreen() {
                         step="0.01"
                         required
                         value={item.unitPrice || ""}
-                        onChange={(e) => handlePriceChange(idx, parseFloat(e.target.value) || 0)}
+                        onChange={(event) =>
+                          handlePriceChange(index, Number.parseFloat(event.target.value) || 0)
+                        }
                         placeholder="Enter bid unit price"
                         className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-emerald-500 bg-white"
                       />
                     </td>
                     <td className="py-4 px-4 font-bold text-slate-800 text-right">
-                      ${item.totalPrice.toLocaleString()}
+                      {formatINR(item.totalPrice)}
                     </td>
                   </tr>
                 ))}
@@ -176,17 +144,15 @@ export default function SubmitQuotationScreen() {
             </table>
           </div>
 
-          {/* Sum details */}
           <div className="flex justify-end pr-4">
             <span className="text-xs font-bold text-slate-400 mr-2 flex items-center">
               Quotation Bid Sum:
             </span>
             <span className="text-base font-extrabold text-emerald-600">
-              ${quoteTotal.toLocaleString()}
+              {formatINR(quoteTotal)}
             </span>
           </div>
 
-          {/* Details Row */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div className="space-y-1">
@@ -197,7 +163,7 @@ export default function SubmitQuotationScreen() {
                   type="text"
                   required
                   value={deliveryTime}
-                  onChange={(e) => setDeliveryTime(e.target.value)}
+                  onChange={(event) => setDeliveryTime(event.target.value)}
                   className="block w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                   placeholder="e.g. 10 Days"
                 />
@@ -209,7 +175,7 @@ export default function SubmitQuotationScreen() {
                 </label>
                 <select
                   value={paymentTerms}
-                  onChange={(e) => setPaymentTerms(e.target.value)}
+                  onChange={(event) => setPaymentTerms(event.target.value)}
                   className="block w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-850 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                 >
                   <option value="Net 15">Net 15</option>
@@ -226,7 +192,7 @@ export default function SubmitQuotationScreen() {
               </label>
               <textarea
                 value={remarks}
-                onChange={(e) => setRemarks(e.target.value)}
+                onChange={(event) => setRemarks(event.target.value)}
                 rows={4.5}
                 className="block w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 resize-none"
                 placeholder="List warranties, package details, bulk discount context, etc."
@@ -234,7 +200,6 @@ export default function SubmitQuotationScreen() {
             </div>
           </div>
 
-          {/* Form Actions */}
           <div className="pt-6 border-t border-slate-100 flex justify-end gap-3">
             <button
               type="button"
@@ -254,5 +219,34 @@ export default function SubmitQuotationScreen() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function SubmitQuotationScreen() {
+  const { rfqs, vendors, submitQuotation, selectedRfqForQuote, setView } = usePortal();
+  const rfq = rfqs.find((item) => item.id === selectedRfqForQuote) || rfqs[1] || rfqs[0];
+
+  if (!rfq) {
+    return (
+      <div className="p-8 text-center text-slate-400">
+        <p className="font-semibold">No active open RFQ found for quotation submissions.</p>
+        <button
+          onClick={() => setView("rfqs")}
+          className="mt-4 text-emerald-600 font-bold hover:underline"
+        >
+          Create one now
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <QuotationForm
+      key={rfq.id}
+      rfq={rfq}
+      vendors={vendors}
+      submitQuotation={submitQuotation}
+      setView={setView}
+    />
   );
 }
