@@ -2,7 +2,7 @@
 
 import React from "react";
 import { usePortal } from "@/context/PortalContext";
-import { formatINR, formatINRShort } from "@/lib/currency";
+import { formatINRShort } from "@/lib/currency";
 import {
   FileText,
   CheckSquare,
@@ -14,41 +14,31 @@ import {
   ChevronRight,
   TrendingUp,
 } from "lucide-react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-
-const chartData = [
-  { name: "Jan", spend: 400000 },
-  { name: "Feb", spend: 900000 },
-  { name: "Mar", spend: 1200000 },
-  { name: "Apr", spend: 1800000 },
-  { name: "May", spend: 2300000 },
-  { name: "Jun", spend: 2100000 },
-];
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function DashboardScreen() {
   const { rfqs, approvals, pos, activityLogs, setView, user } = usePortal();
 
-  // Dynamically compute stats from state
-  const activeRfqsCount = rfqs.filter((r) => r.status !== "Approved" && r.status !== "Draft").length;
-  const pendingApprovalsCount = approvals.filter((a) => a.stage !== "Approved" && a.stage !== "Completed").length;
-  
-  // Total sum of POs
-  const totalSpend = pos.reduce((sum, po) => sum + po.amount, 0) + 2215000; // base from mockup ₹2.3M
-  const overduePosCount = pos.filter((po) => po.status === "Issued").length + 2; // base from mockup
+  const monthOrder = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const monthlySpendMap = new Map<string, number>();
+  pos.forEach((purchaseOrder) => {
+    const monthName = new Date(`${purchaseOrder.date}T00:00:00`).toLocaleString("en-US", { month: "short" });
+    monthlySpendMap.set(monthName, (monthlySpendMap.get(monthName) || 0) + purchaseOrder.amount);
+  });
+  const chartData = Array.from(monthlySpendMap.entries())
+    .map(([name, spend]) => ({ name, spend }))
+    .sort((left, right) => monthOrder.indexOf(left.name) - monthOrder.indexOf(right.name));
+
+  const activeRfqsCount = rfqs.filter((rfq) => rfq.status !== "Approved" && rfq.status !== "Draft").length;
+  const pendingApprovalsCount = approvals.filter((approval) => approval.stage !== "Approved" && approval.stage !== "Completed").length;
+  const totalSpend = pos.reduce((sum, purchaseOrder) => sum + purchaseOrder.amount, 0);
+  const overduePosCount = pos.filter((purchaseOrder) => purchaseOrder.status === "Issued").length;
 
   const stats = [
     {
       label: "Active RFQs",
       value: activeRfqsCount,
-      change: "+12% vs last month",
+      change: "Live database count",
       icon: FileText,
       color: "text-blue-600 bg-blue-50 border-blue-100",
       view: "rfqs" as const,
@@ -56,7 +46,7 @@ export default function DashboardScreen() {
     {
       label: "Pending Approvals",
       value: pendingApprovalsCount,
-      change: "2 high priority",
+      change: "Workflow items awaiting action",
       icon: CheckSquare,
       color: "text-amber-600 bg-amber-50 border-amber-100",
       view: "approvals" as const,
@@ -64,15 +54,15 @@ export default function DashboardScreen() {
     {
       label: "Monthly Spend",
       value: formatINRShort(totalSpend),
-      change: "+8.4% vs Q1",
+      change: "Calculated from purchase orders",
       icon: DollarSign,
       color: "text-emerald-600 bg-emerald-50 border-emerald-100",
       view: "reports" as const,
     },
     {
-      label: "Overdue POs",
+      label: "Open POs",
       value: overduePosCount,
-      change: "Requires attention",
+      change: "Issued and awaiting completion",
       icon: AlertTriangle,
       color: "text-rose-600 bg-rose-50 border-rose-100",
       view: "pos" as const,
@@ -81,7 +71,6 @@ export default function DashboardScreen() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Welcome Header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-800 leading-tight">
           Welcome back, {user?.name || "Procurement Officer"}
@@ -91,12 +80,8 @@ export default function DashboardScreen() {
         </p>
       </div>
 
-      {/* Bento Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* LEFT COLUMN (2/3 width on large screens) */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Stats Cards Row (Bento Style) */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {stats.map((stat, idx) => {
               const Icon = stat.icon;
@@ -130,17 +115,12 @@ export default function DashboardScreen() {
             })}
           </div>
 
-          {/* Recent Activity Logs Bento Card */}
           <div className="bento-card p-6 flex flex-col justify-between min-h-[350px]">
             <div>
               <div className="flex justify-between items-center mb-6">
                 <div>
-                  <h3 className="font-bold text-base text-slate-800 tracking-tight">
-                    Recent Activity
-                  </h3>
-                  <p className="text-slate-400 text-xs mt-0.5">
-                    Latest audits and operations logs
-                  </p>
+                  <h3 className="font-bold text-base text-slate-800 tracking-tight">Recent Activity</h3>
+                  <p className="text-slate-400 text-xs mt-0.5">Latest audits and operations logs</p>
                 </div>
                 <button
                   onClick={() => setView("activity")}
@@ -172,9 +152,7 @@ export default function DashboardScreen() {
                             {log.action}
                           </span>
                         </td>
-                        <td className="py-3 text-slate-500 text-xs max-w-[200px] truncate">
-                          {log.details}
-                        </td>
+                        <td className="py-3 text-slate-500 text-xs max-w-[200px] truncate">{log.details}</td>
                         <td className="py-3 pr-2 text-right text-xs text-slate-400 font-normal">
                           {log.timestamp.split(" ")[1]}
                         </td>
@@ -187,19 +165,12 @@ export default function DashboardScreen() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN (1/3 width) */}
         <div className="space-y-6">
-          
-          {/* Spend Analytics Bento Card */}
           <div className="bento-card p-6 flex flex-col justify-between h-[280px]">
             <div>
-              <h3 className="font-bold text-base text-slate-800 tracking-tight">
-                Spend Trend
-              </h3>
-              <p className="text-slate-400 text-xs mt-0.5 mb-6">
-                Monthly cumulative spend (₹)
-              </p>
-              
+              <h3 className="font-bold text-base text-slate-800 tracking-tight">Spend Trend</h3>
+              <p className="text-slate-400 text-xs mt-0.5 mb-6">Monthly cumulative spend (INR)</p>
+
               <div className="h-[140px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
@@ -216,11 +187,11 @@ export default function DashboardScreen() {
                       fontSize={10}
                       tickLine={false}
                       axisLine={false}
-                      tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`}
+                      tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}k`}
                     />
                     <Tooltip
                       contentStyle={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", fontSize: "12px" }}
-                      formatter={(v: any) => [`₹${Number(v).toLocaleString()}`, "Spend"]}
+                      formatter={(value: number) => [`₹${Number(value).toLocaleString()}`, "Spend"]}
                     />
                     <Area type="monotone" dataKey="spend" stroke="#10B981" strokeWidth={2.5} fillOpacity={1} fill="url(#spendGrad)" />
                   </AreaChart>
@@ -229,15 +200,10 @@ export default function DashboardScreen() {
             </div>
           </div>
 
-          {/* Quick Actions Bento Card */}
           <div className="bento-card p-6 flex flex-col justify-between h-[284px]">
             <div>
-              <h3 className="font-bold text-base text-slate-800 tracking-tight">
-                Quick Actions
-              </h3>
-              <p className="text-slate-400 text-xs mt-0.5 mb-6">
-                Fast-track procurement procedures
-              </p>
+              <h3 className="font-bold text-base text-slate-800 tracking-tight">Quick Actions</h3>
+              <p className="text-slate-400 text-xs mt-0.5 mb-6">Fast-track procurement procedures</p>
 
               <div className="space-y-3">
                 <button
@@ -290,7 +256,6 @@ export default function DashboardScreen() {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
