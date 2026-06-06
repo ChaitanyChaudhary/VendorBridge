@@ -1,0 +1,174 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-50: #ecfdf5;
+  --color-primary-100: #d1fae5;
+  --color-primary-500: #10b981;
+  --color-primary-600: #059669;
+  --color-primary-700: #047857;
+  
+  --color-bento-bg: #f8fafc;
+  --color-bento-card: #ffffff;
+  --color-bento-border: rgba(226, 232, 240, 0.8);
+  
+  --radius-bento: 1.25rem;
+  --radius-bento-lg: 1.75rem;
+  
+  --shadow-bento: 0 1px 3px 0 rgba(0, 0, 0, 0.02), 0 8px 24px -4px rgba(148, 163, 184, 0.08);
+  --shadow-bento-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.01), 0 16px 36px -4px rgba(148, 163, 184, 0.14);
+  
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+}
+
+/* Grayscale Avatar Filter Helper */
+.avatar-bw {
+  filter: grayscale(100%) contrast(110%);
+}
+
+/* force light/dark custom definitions */
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark Theme Overrides */
+.dark-theme {
+  --background: #090d16;
+  --foreground: #f8fafc;
+  --color-bento-bg: #090d16;
+  --color-bento-card: #121824;
+  --color-bento-border: rgba(75, 85, 99, 0.25);
+  --shadow-bento: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
+  --shadow-bento-hover: 0 12px 36px -4px rgba(0, 0, 0, 0.55);
+}
+
+.dark-theme body {
+  background-color: #090d16;
+  color: #f8fafc;
+}
+
+/* Force dark theme overrides on white utility classes */
+.dark-theme .bg-white {
+  background-color: var(--color-bento-card) !important;
+}
+
+.dark-theme .border-slate-100,
+.dark-theme .border-slate-200,
+.dark-theme .border-slate-200\/80,
+.dark-theme .divide-slate-50 > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--color-bento-border) !important;
+}
+
+.dark-theme .divide-y > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--color-bento-border) !important;
+}
+
+.dark-theme .text-slate-800,
+.dark-theme .text-slate-700,
+.dark-theme .text-slate-650,
+.dark-theme .text-slate-650 {
+  color: #e2e8f0 !important;
+}
+
+.dark-theme .text-slate-550,
+.dark-theme .text-slate-500,
+.dark-theme .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+.dark-theme .bg-slate-50,
+.dark-theme .bg-slate-50\/50,
+.dark-theme .bg-slate-50\/40,
+.dark-theme tr.bg-slate-50\/50,
+.dark-theme tr.bg-slate-50 {
+  background-color: rgba(30, 41, 59, 0.4) !important;
+}
+
+.dark-theme .hover\:bg-slate-50\/50:hover,
+.dark-theme .hover\:bg-slate-50\/20:hover,
+.dark-theme .hover\:bg-slate-50:hover,
+.dark-theme tr:hover {
+  background-color: rgba(30, 41, 59, 0.2) !important;
+}
+
+.dark-theme input,
+.dark-theme select,
+.dark-theme textarea {
+  background-color: rgba(30, 41, 59, 0.3) !important;
+  color: #f8fafc !important;
+  border-color: var(--color-bento-border) !important;
+}
+
+.dark-theme input::placeholder {
+  color: #64748b !important;
+}
+
+.dark-theme .text-slate-900 {
+  color: #f1f5f9 !important;
+}
+
+/* Custom Bento Utility classes */
+.bento-grid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.bento-card {
+  background-color: var(--color-bento-card);
+  border: 1px solid var(--color-bento-border);
+  border-radius: var(--radius-bento);
+  box-shadow: var(--shadow-bento);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.bento-card:hover {
+  box-shadow: var(--shadow-bento-hover);
+  transform: translateY(-2px);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Stepper styles */
+.step-line {
+  position: relative;
+}
+.step-line::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  width: 100%;
+  height: 2px;
+  background-color: #e2e8f0;
+  z-index: 1;
+}
+.step-line:last-child::after {
+  display: none;
+}
