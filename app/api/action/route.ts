@@ -309,7 +309,7 @@ export async function POST(request: Request) {
       const workflowId = String(payload.workflowId || "");
       const comment = String(payload.comment || "");
       const workflowResult = await client.query<{ rfq_id: string }>("SELECT rfq_id FROM approvals WHERE id = $1", [workflowId]);
-      if (workflowResult.rowCount === 0) {
+      if (!workflowResult.rows[0]) {
         return NextResponse.json({ error: "Workflow not found." }, { status: 404 });
       }
 

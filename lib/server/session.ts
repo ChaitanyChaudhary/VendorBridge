@@ -2,7 +2,8 @@ import { cookies } from "next/headers";
 import { query } from "@/lib/server/db";
 
 export async function getSessionUser() {
-  const token = cookies().get("vendorbridge_session")?.value;
+  const cookieStore = await cookies();
+  const token = cookieStore.get("vendorbridge_session")?.value;
   if (!token) return null;
 
   const sessionResult = await query<{

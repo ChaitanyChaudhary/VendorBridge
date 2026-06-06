@@ -191,7 +191,7 @@ export default function DashboardScreen() {
                     />
                     <Tooltip
                       contentStyle={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", fontSize: "12px" }}
-                      formatter={(value: number) => [`₹${Number(value).toLocaleString()}`, "Spend"]}
+                      formatter={(value) => [`₹${Number(value ?? 0).toLocaleString()}`, "Spend"]}
                     />
                     <Area type="monotone" dataKey="spend" stroke="#10B981" strokeWidth={2.5} fillOpacity={1} fill="url(#spendGrad)" />
                   </AreaChart>

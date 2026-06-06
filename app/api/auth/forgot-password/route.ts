@@ -15,7 +15,7 @@ export async function POST(request: Request) {
   }
 
   const userResult = await query<{ id: string }>("SELECT id FROM users WHERE email = $1", [email]);
-  if (userResult.rowCount === 0) {
+  if (!userResult.rows[0]) {
     return NextResponse.json({ ok: true, message: "If the account exists, a reset token was created." });
   }
 

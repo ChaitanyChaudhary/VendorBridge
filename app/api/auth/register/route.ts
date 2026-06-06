@@ -20,7 +20,7 @@ export async function POST(request: Request) {
   }
 
   const existing = await query("SELECT id FROM users WHERE email = $1", [email]);
-  if (existing.rowCount > 0) {
+  if (existing.rows[0]) {
     return NextResponse.json({ error: "An account with this email already exists." }, { status: 409 });
   }
 

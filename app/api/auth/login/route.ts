@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     [email]
   );
 
-  if (userResult.rowCount === 0) {
+  if (!userResult.rows[0]) {
     return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
   }
 

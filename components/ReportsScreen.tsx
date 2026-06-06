@@ -161,7 +161,7 @@ export default function ReportsScreen() {
                       border: "1px solid #e2e8f0",
                       fontSize: "11px",
                     }}
-                    formatter={(value: number) => [`₹${Number(value).toLocaleString()}`, "Spend"]}
+                    formatter={(value) => [`₹${Number(value ?? 0).toLocaleString()}`, "Spend"]}
                   />
                   <Legend
                     verticalAlign="bottom"
@@ -211,7 +211,7 @@ export default function ReportsScreen() {
                       border: "1px solid #e2e8f0",
                       fontSize: "11px",
                     }}
-                    formatter={(value: number) => [`₹${Number(value).toLocaleString()}`, "Spend"]}
+                    formatter={(value) => [`₹${Number(value ?? 0).toLocaleString()}`, "Spend"]}
                   />
                   <Bar dataKey="spend" fill="#10B981" radius={[0, 8, 8, 0]} barSize={16}>
                     {vendorSpendData.map((entry, index) => (

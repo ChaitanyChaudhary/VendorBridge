@@ -65,23 +65,23 @@ export default function RegisterScreen() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
-      <div className="w-full max-w-lg animate-fade-in">
+    <div className="min-h-screen overflow-y-auto bg-slate-50 flex items-start justify-center py-8 px-4 sm:px-6">
+      <div className="w-full max-w-lg animate-fade-in my-auto">
         {/* Bento Box Card Container */}
-        <div className="bg-white border border-slate-200/80 rounded-3xl p-8 shadow-bento flex flex-col items-center">
+        <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-bento flex flex-col items-center">
           {/* Logo */}
-          <div className="w-14 h-14 rounded-2xl bg-emerald-500 flex items-center justify-center text-white mb-3 shadow-md shadow-emerald-500/20">
-            <Building2 className="w-7 h-7" />
+          <div className="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center text-white mb-2.5 shadow-md shadow-emerald-500/20">
+            <Building2 className="w-6 h-6" />
           </div>
 
-          <h2 className="text-2xl font-bold text-slate-800 tracking-tight text-center">
+          <h2 className="text-xl font-bold text-slate-800 tracking-tight text-center">
             Register Account
           </h2>
-          <p className="text-slate-400 text-sm mt-1 text-center mb-6">
+          <p className="text-slate-400 text-xs mt-1 text-center mb-4">
             Create your procurement officer credentials
           </p>
 
-          <form onSubmit={handleSubmit} className="w-full space-y-4">
+          <form onSubmit={handleSubmit} className="w-full space-y-3">
             {error && (
               <div className="bg-rose-50 border border-rose-100 text-rose-600 px-4 py-2.5 rounded-xl text-xs font-medium text-center">
                 {error}
@@ -89,8 +89,8 @@ export default function RegisterScreen() {
             )}
 
             {/* First & Last Name row */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
                   First Name
                 </label>
@@ -99,11 +99,11 @@ export default function RegisterScreen() {
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
-                  className="block w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                  className="block w-full px-3 py-2 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
                   placeholder="e.g. John"
                 />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
                   Last Name
                 </label>
@@ -112,19 +112,19 @@ export default function RegisterScreen() {
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
-                  className="block w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                  className="block w-full px-3 py-2 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
                   placeholder="e.g. Doe"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
                   Password
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <LockKeyhole className="h-4 w-4 text-slate-400" />
                   </div>
                   <input
@@ -132,12 +132,12 @@ export default function RegisterScreen() {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="block w-full pl-10 pr-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                    className="block w-full pl-9 pr-3 py-2 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
                     placeholder="Create a password"
                   />
                 </div>
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
                   Confirm Password
                 </label>
@@ -146,15 +146,15 @@ export default function RegisterScreen() {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="block w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                  className="block w-full px-3 py-2 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
                   placeholder="Repeat password"
                 />
               </div>
             </div>
 
             {/* Email & Phone row */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
                   Email Address
                 </label>
@@ -163,11 +163,11 @@ export default function RegisterScreen() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="block w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                  className="block w-full px-3 py-2 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
                   placeholder="name@company.com"
                 />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
                   Phone Number
                 </label>
@@ -176,13 +176,13 @@ export default function RegisterScreen() {
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="block w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                  className="block w-full px-3 py-2 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
                   placeholder="+1 (555) 000-0000"
                 />
               </div>
             </div>
 
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
                 Role
               </label>
@@ -190,7 +190,7 @@ export default function RegisterScreen() {
                 name="role"
                 value={formData.role}
                 onChange={handleSelectChange}
-                className="block w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                className="block w-full px-3 py-2 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
               >
                 <option value="Procurement Officer">Procurement Officer</option>
                 <option value="Vendor">Vendor</option>
@@ -200,8 +200,8 @@ export default function RegisterScreen() {
             </div>
 
             {/* Address & Country row */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
                   Address
                 </label>
@@ -210,11 +210,11 @@ export default function RegisterScreen() {
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
-                  className="block w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                  className="block w-full px-3 py-2 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
                   placeholder="123 Corporate Blvd"
                 />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
                   Country
                 </label>
@@ -223,14 +223,14 @@ export default function RegisterScreen() {
                   name="country"
                   value={formData.country}
                   onChange={handleChange}
-                  className="block w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                  className="block w-full px-3 py-2 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
                   placeholder="e.g. United States"
                 />
               </div>
             </div>
 
             {/* Additional Info */}
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
                 Additional Information
               </label>
@@ -239,7 +239,7 @@ export default function RegisterScreen() {
                 value={formData.additionalInfo}
                 onChange={handleChange}
                 rows={2}
-                className="block w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200 resize-none"
+                className="block w-full px-3 py-2 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200 resize-none"
                 placeholder="Include certification details, department codes, etc."
               />
             </div>
@@ -248,14 +248,14 @@ export default function RegisterScreen() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3 px-4 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white font-semibold rounded-xl shadow-sm hover:shadow transition-all duration-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+              className="w-full py-2.5 px-4 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white font-semibold rounded-xl shadow-sm hover:shadow transition-all duration-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
             >
               {isSubmitting ? "Creating..." : "Create Account"}
             </button>
           </form>
 
           {/* Login Link */}
-          <div className="mt-6 pt-5 border-t border-slate-100 w-full text-center">
+          <div className="mt-4 pt-4 border-t border-slate-100 w-full text-center">
             <span className="text-xs text-slate-400 font-medium">
               Already have an account?{" "}
             </span>
