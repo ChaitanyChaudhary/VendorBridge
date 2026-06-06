@@ -2,6 +2,7 @@
 
 import React from "react";
 import { usePortal } from "@/context/PortalContext";
+import { formatINR, formatINRShort } from "@/lib/currency";
 import {
   FileText,
   CheckSquare,
@@ -40,7 +41,7 @@ export default function DashboardScreen() {
   const pendingApprovalsCount = approvals.filter((a) => a.stage !== "Approved" && a.stage !== "Completed").length;
   
   // Total sum of POs
-  const totalSpend = pos.reduce((sum, po) => sum + po.amount, 0) + 2215000; // base from mockup $2.3M
+  const totalSpend = pos.reduce((sum, po) => sum + po.amount, 0) + 2215000; // base from mockup ₹2.3M
   const overduePosCount = pos.filter((po) => po.status === "Issued").length + 2; // base from mockup
 
   const stats = [
@@ -62,7 +63,7 @@ export default function DashboardScreen() {
     },
     {
       label: "Monthly Spend",
-      value: `$${(totalSpend / 1000000).toFixed(1)}M`,
+      value: formatINRShort(totalSpend),
       change: "+8.4% vs Q1",
       icon: DollarSign,
       color: "text-emerald-600 bg-emerald-50 border-emerald-100",
@@ -196,7 +197,7 @@ export default function DashboardScreen() {
                 Spend Trend
               </h3>
               <p className="text-slate-400 text-xs mt-0.5 mb-6">
-                Monthly cumulative spend ($)
+                Monthly cumulative spend (₹)
               </p>
               
               <div className="h-[140px] w-full">
@@ -215,11 +216,11 @@ export default function DashboardScreen() {
                       fontSize={10}
                       tickLine={false}
                       axisLine={false}
-                      tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                      tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`}
                     />
                     <Tooltip
                       contentStyle={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", fontSize: "12px" }}
-                      formatter={(v: any) => [`$${Number(v).toLocaleString()}`, "Spend"]}
+                      formatter={(v: any) => [`₹${Number(v).toLocaleString()}`, "Spend"]}
                     />
                     <Area type="monotone" dataKey="spend" stroke="#10B981" strokeWidth={2.5} fillOpacity={1} fill="url(#spendGrad)" />
                   </AreaChart>

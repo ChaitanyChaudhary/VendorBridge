@@ -26,7 +26,12 @@ interface SidebarItem {
   icon: LucideIcon;
 }
 
-export default function Sidebar() {
+interface SidebarProps {
+  mobile?: boolean;
+  onNavigate?: () => void;
+}
+
+export default function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
   const { currentView, setView, user, logout, userProfile } = usePortal();
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
@@ -58,7 +63,7 @@ export default function Sidebar() {
   const isActive = (viewId: ViewType) => currentView === viewId;
 
   return (
-    <aside className="w-64 bg-white border border-slate-200/80 rounded-3xl p-6 flex flex-col shadow-sm h-[calc(100vh-2rem)] sticky top-4 select-none overflow-visible">
+    <aside className={`w-full lg:w-64 bg-white border border-slate-200/80 rounded-3xl p-4 sm:p-5 lg:p-6 flex flex-col shadow-sm lg:h-[calc(100vh-2rem)] lg:sticky lg:top-4 select-none overflow-visible ${mobile ? "h-full rounded-none border-0" : ""}`}>
       {/* Brand Logo */}
       <div className="flex items-center gap-3 px-2 mb-8">
         <div className="w-10 h-10 rounded-2xl bg-emerald-500 flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
@@ -75,22 +80,25 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-1 min-h-0 space-y-1 overflow-y-auto pr-1">
+      <nav className="flex-1 min-h-0 grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-col gap-2 lg:gap-1 overflow-y-auto scrollbar-none pr-0 lg:pr-1">
         {menuItems.map((item) => {
           const IconComponent = item.icon;
           const active = isActive(item.id);
           return (
             <button
               key={item.id}
-              onClick={() => setView(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${
+              onClick={() => {
+                setView(item.id);
+                onNavigate?.();
+              }}
+              className={`w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl text-[11px] sm:text-sm font-medium transition-all duration-200 group ${
                 active
                   ? "bg-emerald-50 text-emerald-700 shadow-sm border border-emerald-100"
                   : "text-slate-500 hover:bg-slate-50 hover:text-slate-800 border border-transparent"
               }`}
             >
               <IconComponent
-                className={`w-4.5 h-4.5 transition-colors ${
+                className={`w-4 h-4 sm:w-4.5 sm:h-4.5 transition-colors ${
                   active ? "text-emerald-600" : "text-slate-400 group-hover:text-slate-600"
                 }`}
               />
@@ -102,7 +110,7 @@ export default function Sidebar() {
 
       {/* User Session Profile Card */}
       {user && (
-        <div ref={profileMenuRef} className="mt-auto pt-6 border-t border-slate-100 pb-2 relative">
+        <div ref={profileMenuRef} className="mt-4 lg:mt-auto pt-4 lg:pt-6 border-t border-slate-100 pb-2 relative">
           <button
             type="button"
             onClick={() => setProfileMenuOpen((prev) => !prev)}
@@ -145,12 +153,13 @@ export default function Sidebar() {
           </button>
 
           {profileMenuOpen && (
-            <div className="absolute bottom-full left-0 right-0 mb-3 rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-200/60 overflow-hidden z-20">
+            <div className="absolute top-full left-0 right-0 mt-3 lg:top-auto lg:bottom-full lg:mb-3 lg:mt-0 rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-200/60 overflow-hidden z-20">
               <button
                 type="button"
                 onClick={() => {
                   setProfileMenuOpen(false);
                   setView("settings");
+                  onNavigate?.();
                 }}
                 className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
               >
@@ -162,6 +171,7 @@ export default function Sidebar() {
                 onClick={() => {
                   setProfileMenuOpen(false);
                   logout();
+                  onNavigate?.();
                 }}
                 className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-rose-600 hover:bg-rose-50 transition-colors border-t border-slate-100"
               >

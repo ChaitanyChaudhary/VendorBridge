@@ -3,6 +3,7 @@
 import React from "react";
 import { usePortal } from "@/context/PortalContext";
 import { TrendingUp, Award, Calendar, DollarSign } from "lucide-react";
+import { formatINR, formatINRShort } from "@/lib/currency";
 import {
   BarChart,
   Bar,
@@ -21,7 +22,7 @@ export default function ReportsScreen() {
   const { pos } = usePortal();
 
   // Compute reports metrics
-  const totalSpend = pos.reduce((sum, po) => sum + po.amount, 0) + 2215000; // base mockup total $2.3M
+  const totalSpend = pos.reduce((sum, po) => sum + po.amount, 0) + 2215000; // base mockup total ₹2.3M
   
   // Data for Category breakdown
   const categoryData = [
@@ -42,7 +43,7 @@ export default function ReportsScreen() {
   const metrics = [
     {
       label: "Total Procurement Spend",
-      value: `$${(totalSpend / 1000000).toFixed(2)}M`,
+      value: formatINRShort(totalSpend),
       desc: "+4.2% vs previous period",
       icon: DollarSign,
       color: "bg-emerald-50 text-emerald-600 border-emerald-100",
@@ -131,7 +132,7 @@ export default function ReportsScreen() {
                   </Pie>
                   <Tooltip
                     contentStyle={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", fontSize: "11px" }}
-                    formatter={(v: any) => [`$${Number(v).toLocaleString()}`, "Spend"]}
+                    formatter={(v: any) => [`₹${Number(v).toLocaleString()}`, "Spend"]}
                   />
                   <Legend
                     verticalAlign="bottom"
@@ -169,7 +170,7 @@ export default function ReportsScreen() {
                     fontSize={10}
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                    tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`}
                   />
                   <YAxis
                     type="category"
@@ -181,7 +182,7 @@ export default function ReportsScreen() {
                   />
                   <Tooltip
                     contentStyle={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", fontSize: "11px" }}
-                    formatter={(v: any) => [`$${Number(v).toLocaleString()}`, "Spend"]}
+                    formatter={(v: any) => [`₹${Number(v).toLocaleString()}`, "Spend"]}
                   />
                   <Bar dataKey="spend" fill="#10B981" radius={[0, 8, 8, 0]} barSize={16}>
                     {vendorSpendData.map((entry, index) => (

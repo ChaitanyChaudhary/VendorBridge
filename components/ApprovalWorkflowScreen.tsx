@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { usePortal } from "@/context/PortalContext";
 import { Check, ShieldCheck, AlertCircle, Send, MessageSquare } from "lucide-react";
+import { formatINR } from "@/lib/currency";
 
 export default function ApprovalWorkflowScreen() {
   const { approvals, approveWorkflow, rejectWorkflow, selectedRfqForApproval, setView } = usePortal();
@@ -72,7 +73,7 @@ export default function ApprovalWorkflowScreen() {
               Proposed Award Value
             </span>
             <span className="text-base font-extrabold text-slate-800 mt-0.5 block">
-              ${activeApproval.amount.toLocaleString()}
+              {formatINR(activeApproval.amount)}
             </span>
           </div>
         </div>

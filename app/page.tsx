@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { usePortal } from "@/context/PortalContext";
 import Sidebar from "@/components/Sidebar";
 import LoginScreen from "@/components/LoginScreen";
@@ -16,9 +16,11 @@ import PurchaseOrderScreen from "@/components/PurchaseOrderScreen";
 import ActivityScreen from "@/components/ActivityScreen";
 import ReportsScreen from "@/components/ReportsScreen";
 import SettingsScreen from "@/components/SettingsScreen";
+import { Menu } from "lucide-react";
 
 export default function Home() {
   const { user, currentView } = usePortal();
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // 1. Auth Routing
   if (!user) {
@@ -59,13 +61,49 @@ export default function Home() {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 p-4 gap-6">
+    <div className="flex h-screen flex-col lg:flex-row bg-slate-50 p-2 sm:p-4 gap-3 sm:gap-4 lg:gap-6 overflow-hidden">
       {/* Sidebar navigation */}
-      <Sidebar />
+      <div className="hidden lg:block">
+        <Sidebar />
+      </div>
+
+      {mobileSidebarOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <button
+            aria-label="Close navigation"
+            className="absolute inset-0 bg-slate-900/30"
+            onClick={() => setMobileSidebarOpen(false)}
+            type="button"
+          />
+          <div className="absolute left-0 top-0 h-full w-[88vw] max-w-sm">
+            <Sidebar mobile onNavigate={() => setMobileSidebarOpen(false)} />
+          </div>
+        </div>
+      )}
 
       {/* Main content pane */}
-      <main className="flex-1 bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm overflow-y-auto max-h-[calc(100vh-2rem)] relative">
-        {renderCurrentView()}
+      <main className="flex-1 min-h-0 bg-white border border-slate-200/80 rounded-3xl p-4 sm:p-5 lg:p-6 shadow-sm overflow-y-auto scrollbar-none relative">
+        <div className="flex items-center justify-between gap-3 mb-4 lg:hidden">
+          <button
+            type="button"
+            onClick={() => setMobileSidebarOpen(true)}
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm"
+          >
+            <Menu className="h-4 w-4" />
+            Menu
+          </button>
+          <div className="text-right">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">VendorBridge</p>
+            <p className="text-xs font-semibold text-slate-700">Procure Suite</p>
+          </div>
+        </div>
+
+        <div className="hidden lg:block">
+          {renderCurrentView()}
+        </div>
+        <div className="lg:hidden">
+          {renderCurrentView()}
+        </div>
       </main>
     </div>
   );

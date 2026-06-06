@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { usePortal, RFQItem, RFQ } from "@/context/PortalContext";
 import { Plus, Trash2, ArrowLeft, ArrowRight, Building, Check, ClipboardList } from "lucide-react";
+import { formatINR } from "@/lib/currency";
 
 export default function CreateRFQScreen() {
   const { vendors, addRFQ, setView } = usePortal();
@@ -237,8 +238,8 @@ export default function CreateRFQScreen() {
                       <th className="py-2.5 px-3">Item Description</th>
                       <th className="py-2.5 px-3 w-24">Qty</th>
                       <th className="py-2.5 px-3 w-24">Unit</th>
-                      <th className="py-2.5 px-3 w-32">Est. Unit Price ($)</th>
-                      <th className="py-2.5 px-3 w-28 text-right">Total Est. ($)</th>
+                      <th className="py-2.5 px-3 w-32">Est. Unit Price (₹)</th>
+                      <th className="py-2.5 px-3 w-28 text-right">Total Est. (₹)</th>
                       <th className="py-2.5 px-3 w-16 text-center">Delete</th>
                     </tr>
                   </thead>
@@ -283,7 +284,7 @@ export default function CreateRFQScreen() {
                           />
                         </td>
                         <td className="py-3 px-3 font-bold text-slate-700 text-right">
-                          ${(item.qty * item.estimatedPrice).toLocaleString()}
+                          {formatINR(item.qty * item.estimatedPrice)}
                         </td>
                         <td className="py-2 px-2 text-center">
                           <button
@@ -309,7 +310,7 @@ export default function CreateRFQScreen() {
               <div className="flex justify-end pt-3 pr-8">
                 <span className="text-xs font-semibold text-slate-400 mr-2">Total Project Estimate:</span>
                 <span className="text-sm font-extrabold text-slate-800">
-                  ${rfqItems.reduce((sum, i) => sum + i.qty * i.estimatedPrice, 0).toLocaleString()}
+                  {formatINR(rfqItems.reduce((sum, i) => sum + i.qty * i.estimatedPrice, 0))}
                 </span>
               </div>
             </div>
@@ -431,7 +432,7 @@ export default function CreateRFQScreen() {
                       <div key={i} className="grid grid-cols-4 py-2.5 px-3 text-slate-650 font-medium">
                         <span className="col-span-2 font-bold text-slate-700">{item.description}</span>
                         <span>{item.qty} {item.unit}</span>
-                        <span className="text-right">${item.estimatedPrice.toLocaleString()}</span>
+                        <span className="text-right">{formatINR(item.estimatedPrice)}</span>
                       </div>
                     ))}
                   </div>

@@ -31,92 +31,189 @@
   filter: grayscale(100%) contrast(110%);
 }
 
-/* force light/dark custom definitions */
 body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
-  overflow-x: hidden;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow: hidden;
+  transition: background-color 0.35s ease, color 0.35s ease;
 }
 
-/* Dark Theme Overrides */
+/* ============================================================
+   DARK THEME — PROPER BLACK (#000000) BACKGROUNDS
+   ============================================================ */
 .dark-theme {
-  --background: #090d16;
-  --foreground: #f8fafc;
-  --color-bento-bg: #090d16;
-  --color-bento-card: #121824;
-  --color-bento-border: rgba(75, 85, 99, 0.25);
-  --shadow-bento: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
-  --shadow-bento-hover: 0 12px 36px -4px rgba(0, 0, 0, 0.55);
+  --background: #000000;
+  --foreground: #f1f5f9;
+  --color-bento-bg: #000000;
+  --color-bento-card: #0a0a0a;
+  --color-bento-border: rgba(255, 255, 255, 0.08);
+  --shadow-bento: 0 2px 12px -2px rgba(0, 0, 0, 0.6);
+  --shadow-bento-hover: 0 8px 28px -4px rgba(0, 0, 0, 0.75);
 }
 
-.dark-theme body {
-  background-color: #090d16;
-  color: #f8fafc;
-}
-
-/* Force dark theme overrides on white utility classes */
-.dark-theme .bg-white {
-  background-color: var(--color-bento-card) !important;
-}
-
-.dark-theme .border-slate-100,
-.dark-theme .border-slate-200,
-.dark-theme .border-slate-200\/80,
-.dark-theme .divide-slate-50 > :not([hidden]) ~ :not([hidden]) {
-  border-color: var(--color-bento-border) !important;
-}
-
-.dark-theme .divide-y > :not([hidden]) ~ :not([hidden]) {
-  border-color: var(--color-bento-border) !important;
-}
-
-.dark-theme .text-slate-800,
-.dark-theme .text-slate-700,
-.dark-theme .text-slate-650,
-.dark-theme .text-slate-650 {
-  color: #e2e8f0 !important;
-}
-
-.dark-theme .text-slate-550,
-.dark-theme .text-slate-500,
-.dark-theme .text-slate-400 {
-  color: #94a3b8 !important;
-}
-
-.dark-theme .bg-slate-50,
-.dark-theme .bg-slate-50\/50,
-.dark-theme .bg-slate-50\/40,
-.dark-theme tr.bg-slate-50\/50,
-.dark-theme tr.bg-slate-50 {
-  background-color: rgba(30, 41, 59, 0.4) !important;
-}
-
-.dark-theme .hover\:bg-slate-50\/50:hover,
-.dark-theme .hover\:bg-slate-50\/20:hover,
-.dark-theme .hover\:bg-slate-50:hover,
-.dark-theme tr:hover {
-  background-color: rgba(30, 41, 59, 0.2) !important;
-}
-
-.dark-theme input,
-.dark-theme select,
-.dark-theme textarea {
-  background-color: rgba(30, 41, 59, 0.3) !important;
-  color: #f8fafc !important;
-  border-color: var(--color-bento-border) !important;
-}
-
-.dark-theme input::placeholder {
-  color: #64748b !important;
-}
-
-.dark-theme .text-slate-900 {
+.dark-theme body,
+.dark-theme {
+  background-color: #000000 !important;
   color: #f1f5f9 !important;
 }
 
-/* Custom Bento Utility classes */
+/* Main layout containers */
+.dark-theme .bg-white {
+  background-color: #0a0a0a !important;
+}
+
+.dark-theme .bg-slate-50 {
+  background-color: #000000 !important;
+}
+
+/* Borders */
+.dark-theme .border-slate-100,
+.dark-theme .border-slate-200,
+.dark-theme .border-slate-200\/80 {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark-theme .divide-slate-50 > :not([hidden]) ~ :not([hidden]),
+.dark-theme .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+.dark-theme .divide-y > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Text colors */
+.dark-theme .text-slate-900 {
+  color: #f8fafc !important;
+}
+
+.dark-theme .text-slate-800 {
+  color: #e2e8f0 !important;
+}
+
+.dark-theme .text-slate-700 {
+  color: #cbd5e1 !important;
+}
+
+.dark-theme .text-slate-600 {
+  color: #94a3b8 !important;
+}
+
+.dark-theme .text-slate-500 {
+  color: #64748b !important;
+}
+
+.dark-theme .text-slate-400 {
+  color: #475569 !important;
+}
+
+/* Surface backgrounds */
+.dark-theme .bg-slate-50\/50,
+.dark-theme .bg-slate-50\/40 {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+.dark-theme tr.bg-slate-50\/50,
+.dark-theme tr.bg-slate-50 {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Hover states */
+.dark-theme .hover\:bg-slate-50:hover,
+.dark-theme .hover\:bg-slate-50\/50:hover,
+.dark-theme .hover\:bg-slate-50\/20:hover {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+.dark-theme tr:hover {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Inputs and form elements */
+.dark-theme input,
+.dark-theme select,
+.dark-theme textarea {
+  background-color: #111111 !important;
+  color: #f1f5f9 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark-theme input::placeholder,
+.dark-theme textarea::placeholder {
+  color: #4b5563 !important;
+}
+
+.dark-theme input:focus,
+.dark-theme select:focus,
+.dark-theme textarea:focus {
+  border-color: rgba(16, 185, 129, 0.5) !important;
+}
+
+/* Badge / chip overrides in dark */
+.dark-theme .bg-slate-100 {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.dark-theme .border-slate-200\/50 {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Emerald accent backgrounds in dark */
+.dark-theme .bg-emerald-50,
+.dark-theme .bg-emerald-50\/10,
+.dark-theme .bg-emerald-50\/20,
+.dark-theme .bg-emerald-50\/30 {
+  background-color: rgba(16, 185, 129, 0.08) !important;
+}
+
+.dark-theme .border-emerald-100 {
+  border-color: rgba(16, 185, 129, 0.15) !important;
+}
+
+/* Blue accent backgrounds in dark */
+.dark-theme .bg-blue-50 {
+  background-color: rgba(59, 130, 246, 0.08) !important;
+}
+
+.dark-theme .border-blue-100 {
+  border-color: rgba(59, 130, 246, 0.15) !important;
+}
+
+/* Amber accent backgrounds in dark */
+.dark-theme .bg-amber-50 {
+  background-color: rgba(245, 158, 11, 0.08) !important;
+}
+
+.dark-theme .border-amber-100 {
+  border-color: rgba(245, 158, 11, 0.15) !important;
+}
+
+/* Rose accent backgrounds in dark */
+.dark-theme .bg-rose-50,
+.dark-theme .bg-rose-50\/50 {
+  background-color: rgba(244, 63, 94, 0.08) !important;
+}
+
+.dark-theme .border-rose-100 {
+  border-color: rgba(244, 63, 94, 0.15) !important;
+}
+
+/* Indigo accent backgrounds in dark */
+.dark-theme .bg-indigo-50 {
+  background-color: rgba(99, 102, 241, 0.08) !important;
+}
+
+.dark-theme .border-indigo-100 {
+  border-color: rgba(99, 102, 241, 0.15) !important;
+}
+
+/* Recharts tooltip in dark mode */
+.dark-theme .recharts-tooltip-wrapper .recharts-default-tooltip {
+  background-color: #111111 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ============================================================
+   BENTO LAYOUT UTILITIES
+   ============================================================ */
 .bento-grid {
   display: grid;
   gap: 1.25rem;
@@ -145,6 +242,12 @@ body {
   scrollbar-width: none;
 }
 
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
@@ -153,22 +256,4 @@ body {
 
 .animate-fade-in {
   animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Stepper styles */
-.step-line {
-  position: relative;
-}
-.step-line::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 100%;
-  width: 100%;
-  height: 2px;
-  background-color: #e2e8f0;
-  z-index: 1;
-}
-.step-line:last-child::after {
-  display: none;
 }
