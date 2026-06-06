@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { usePortal, ViewType } from "@/context/PortalContext";
 import {
@@ -16,6 +16,7 @@ import {
   LogOut,
   Building2,
   Settings,
+  ChevronUp,
   type LucideIcon,
 } from "lucide-react";
 
@@ -27,6 +28,8 @@ interface SidebarItem {
 
 export default function Sidebar() {
   const { currentView, setView, user, logout, userProfile } = usePortal();
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement | null>(null);
 
   const menuItems: SidebarItem[] = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -38,14 +41,24 @@ export default function Sidebar() {
     { id: "pos", label: "Purchase Orders", icon: Receipt },
     { id: "reports", label: "Reports", icon: BarChart3 },
     { id: "activity", label: "Activity Logs", icon: History },
-    { id: "settings", label: "Settings", icon: Settings },
   ];
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setProfileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
 
   // Helper to highlight active navigation link
   const isActive = (viewId: ViewType) => currentView === viewId;
 
   return (
-    <aside className="w-64 bg-white border border-slate-200/80 rounded-3xl p-6 flex flex-col shadow-sm h-[calc(100vh-2rem)] sticky top-4 select-none overflow-y-auto">
+    <aside className="w-64 bg-white border border-slate-200/80 rounded-3xl p-6 flex flex-col shadow-sm h-[calc(100vh-2rem)] sticky top-4 select-none overflow-visible">
       {/* Brand Logo */}
       <div className="flex items-center gap-3 px-2 mb-8">
         <div className="w-10 h-10 rounded-2xl bg-emerald-500 flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
@@ -62,7 +75,7 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-1 min-h-0 space-y-1">
+      <nav className="flex-1 min-h-0 space-y-1 overflow-y-auto pr-1">
         {menuItems.map((item) => {
           const IconComponent = item.icon;
           const active = isActive(item.id);
@@ -89,8 +102,16 @@ export default function Sidebar() {
 
       {/* User Session Profile Card */}
       {user && (
-        <div className="mt-auto pt-6 border-t border-slate-100 pb-2">
-          <div className="flex items-center gap-3 px-2 mb-4">
+        <div ref={profileMenuRef} className="mt-auto pt-6 border-t border-slate-100 pb-2 relative">
+          <button
+            type="button"
+            onClick={() => setProfileMenuOpen((prev) => !prev)}
+            className={`w-full flex items-center gap-3 px-2 py-2.5 rounded-2xl border transition-all duration-200 text-left ${
+              profileMenuOpen
+                ? "bg-emerald-50 border-emerald-100 shadow-sm"
+                : "border-transparent hover:bg-slate-50"
+            }`}
+          >
             <div className="w-10 h-10 rounded-full border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center shadow-inner shrink-0">
               {userProfile.avatarUrl ? (
                 <Image
@@ -116,14 +137,39 @@ export default function Sidebar() {
                 {userProfile.role || user.role}
               </span>
             </div>
-          </div>
-          <button
-            onClick={logout}
-            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-rose-600 hover:bg-rose-50/50 border border-transparent hover:border-rose-100 transition-all duration-200"
-          >
-            <LogOut className="w-4.5 h-4.5" />
-            Sign Out
+            <ChevronUp
+              className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${
+                profileMenuOpen ? "rotate-180 text-emerald-600" : ""
+              }`}
+            />
           </button>
+
+          {profileMenuOpen && (
+            <div className="absolute bottom-full left-0 right-0 mb-3 rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-200/60 overflow-hidden z-20">
+              <button
+                type="button"
+                onClick={() => {
+                  setProfileMenuOpen(false);
+                  setView("settings");
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+              >
+                <Settings className="w-4 h-4 text-slate-500" />
+                Settings
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setProfileMenuOpen(false);
+                  logout();
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-rose-600 hover:bg-rose-50 transition-colors border-t border-slate-100"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out
+              </button>
+            </div>
+          )}
         </div>
       )}
     </aside>
