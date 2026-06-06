@@ -2,8 +2,8 @@
 
 import React from "react";
 import { usePortal } from "@/context/PortalContext";
-import { TrendingUp, Award, Calendar, DollarSign } from "lucide-react";
-import { formatINR, formatINRShort } from "@/lib/currency";
+import { TrendingUp, Calendar, DollarSign } from "lucide-react";
+import { formatINRShort } from "@/lib/currency";
 import {
   BarChart,
   Bar,
@@ -19,46 +19,79 @@ import {
 } from "recharts";
 
 export default function ReportsScreen() {
-  const { pos } = usePortal();
+  const { pos, rfqs } = usePortal();
 
-  // Compute reports metrics
-  const totalSpend = pos.reduce((sum, po) => sum + po.amount, 0) + 2215000; // base mockup total ₹2.3M
-  
-  // Data for Category breakdown
-  const categoryData = [
-    { name: "Furniture & Decor", value: 121200 + 40000, color: "#10B981" }, // Emerald
-    { name: "IT Hardware & Software", value: 85000 + 1500000, color: "#6366F1" }, // Indigo
-    { name: "Office Supplies & Paper", value: 250000, color: "#F59E0B" }, // Amber
-    { name: "Logistics & Shipping", value: 38800, color: "#3B82F6" }, // Blue
-  ];
+  const totalSpend = pos.reduce((sum, purchaseOrder) => sum + purchaseOrder.amount, 0);
 
-  // Data for Top Vendors
-  const vendorSpendData = [
-    { name: "TechCorp", spend: 1585000 },
-    { name: "Info Supplies", spend: 121200 },
-    { name: "OfficeDepot", spend: 250000 },
-    { name: "GlobalOffice", spend: 40000 },
-  ].sort((a, b) => b.spend - a.spend);
+  const rfqById = new Map(rfqs.map((rfq) => [rfq.id, rfq]));
+  const categoryTotals = new Map<string, number>();
+  rfqs.forEach((rfq) => {
+    const matchingPo = pos.find((purchaseOrder) => purchaseOrder.rfqId === rfq.id);
+    if (matchingPo) {
+      categoryTotals.set(rfq.category, (categoryTotals.get(rfq.category) || 0) + matchingPo.amount);
+    }
+  });
+
+  const categoryData = Array.from(categoryTotals.entries()).map(([name, value], index) => ({
+    name,
+    value,
+    color: ["#10B981", "#6366F1", "#F59E0B", "#3B82F6", "#EF4444"][index % 5],
+  }));
+
+  const vendorTotals = new Map<string, number>();
+  pos.forEach((purchaseOrder) => {
+    vendorTotals.set(purchaseOrder.vendorName, (vendorTotals.get(purchaseOrder.vendorName) || 0) + purchaseOrder.amount);
+  });
+
+  const vendorSpendData = Array.from(vendorTotals.entries())
+    .map(([name, spend]) => ({ name, spend }))
+    .sort((left, right) => right.spend - left.spend);
+
+  const averageCycleDays =
+    pos.length === 0
+      ? 0
+      : pos.reduce((sum, purchaseOrder) => {
+          const rfq = rfqById.get(purchaseOrder.rfqId);
+          if (!rfq) return sum;
+          const start = new Date(`${rfq.createdAt}T00:00:00`).getTime();
+          const end = new Date(`${purchaseOrder.date}T00:00:00`).getTime();
+          return sum + Math.max(0, Math.round((end - start) / (1000 * 60 * 60 * 24)));
+        }, 0) / pos.length;
+
+  const averageSavingsRate =
+    pos.length === 0
+      ? 0
+      : pos.reduce((sum, purchaseOrder) => {
+          const rfq = rfqById.get(purchaseOrder.rfqId);
+          if (!rfq) return sum;
+          const estimatedTotal = rfq.items.reduce(
+            (itemSum, item) => itemSum + item.qty * item.estimatedPrice,
+            0
+          );
+          if (estimatedTotal === 0) return sum;
+          const savings = ((estimatedTotal - purchaseOrder.amount) / estimatedTotal) * 100;
+          return sum + savings;
+        }, 0) / pos.length;
 
   const metrics = [
     {
       label: "Total Procurement Spend",
       value: formatINRShort(totalSpend),
-      desc: "+4.2% vs previous period",
+      desc: "Computed from purchase orders",
       icon: DollarSign,
       color: "bg-emerald-50 text-emerald-600 border-emerald-100",
     },
     {
       label: "Average RFP Cycle Time",
-      value: "8.4 Days",
-      desc: "-1.2 days reduction (Faster)",
+      value: `${averageCycleDays.toFixed(1)} Days`,
+      desc: "From RFQ creation to PO issue",
       icon: Calendar,
       color: "bg-blue-50 text-blue-600 border-blue-100",
     },
     {
       label: "Average Bid Savings Rate",
-      value: "14.6%",
-      desc: "Target: 12% (+2.6% over)",
+      value: `${averageSavingsRate.toFixed(1)}%`,
+      desc: "Against estimated RFQ totals",
       icon: TrendingUp,
       color: "bg-indigo-50 text-indigo-600 border-indigo-100",
     },
@@ -66,7 +99,6 @@ export default function ReportsScreen() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-800 leading-tight">
           Reports & Analytics
@@ -76,7 +108,6 @@ export default function ReportsScreen() {
         </p>
       </div>
 
-      {/* Metrics Bento Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {metrics.map((metric, idx) => {
           const Icon = metric.icon;
@@ -101,18 +132,11 @@ export default function ReportsScreen() {
         })}
       </div>
 
-      {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
-        {/* Left Card: Spend by Category Donut */}
         <div className="bento-card p-6 min-h-[350px] flex flex-col justify-between">
           <div>
-            <h3 className="font-bold text-base text-slate-800 tracking-tight">
-              Spend by Category
-            </h3>
-            <p className="text-slate-400 text-xs mt-0.5 mb-6">
-              Procurement breakdown across departments
-            </p>
+            <h3 className="font-bold text-base text-slate-800 tracking-tight">Spend by Category</h3>
+            <p className="text-slate-400 text-xs mt-0.5 mb-6">Procurement breakdown across categories</p>
 
             <div className="h-[200px] w-full flex items-center justify-center">
               <ResponsiveContainer width="100%" height="100%">
@@ -131,8 +155,13 @@ export default function ReportsScreen() {
                     ))}
                   </Pie>
                   <Tooltip
-                    contentStyle={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", fontSize: "11px" }}
-                    formatter={(v: any) => [`₹${Number(v).toLocaleString()}`, "Spend"]}
+                    contentStyle={{
+                      backgroundColor: "#ffffff",
+                      borderRadius: "12px",
+                      border: "1px solid #e2e8f0",
+                      fontSize: "11px",
+                    }}
+                    formatter={(value: number) => [`₹${Number(value).toLocaleString()}`, "Spend"]}
                   />
                   <Legend
                     verticalAlign="bottom"
@@ -146,15 +175,10 @@ export default function ReportsScreen() {
           </div>
         </div>
 
-        {/* Right Card: Top Vendors Spend Horizontal Bar */}
         <div className="bento-card p-6 min-h-[350px] flex flex-col justify-between">
           <div>
-            <h3 className="font-bold text-base text-slate-800 tracking-tight">
-              Top Vendors by Spend
-            </h3>
-            <p className="text-slate-400 text-xs mt-0.5 mb-6">
-              Total transaction values per registered supplier
-            </p>
+            <h3 className="font-bold text-base text-slate-800 tracking-tight">Top Vendors by Spend</h3>
+            <p className="text-slate-400 text-xs mt-0.5 mb-6">Total transaction values per registered supplier</p>
 
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -170,7 +194,7 @@ export default function ReportsScreen() {
                     fontSize={10}
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`}
+                    tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}k`}
                   />
                   <YAxis
                     type="category"
@@ -181,8 +205,13 @@ export default function ReportsScreen() {
                     axisLine={false}
                   />
                   <Tooltip
-                    contentStyle={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", fontSize: "11px" }}
-                    formatter={(v: any) => [`₹${Number(v).toLocaleString()}`, "Spend"]}
+                    contentStyle={{
+                      backgroundColor: "#ffffff",
+                      borderRadius: "12px",
+                      border: "1px solid #e2e8f0",
+                      fontSize: "11px",
+                    }}
+                    formatter={(value: number) => [`₹${Number(value).toLocaleString()}`, "Spend"]}
                   />
                   <Bar dataKey="spend" fill="#10B981" radius={[0, 8, 8, 0]} barSize={16}>
                     {vendorSpendData.map((entry, index) => (
@@ -194,7 +223,6 @@ export default function ReportsScreen() {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );
